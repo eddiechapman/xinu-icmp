@@ -23,6 +23,10 @@ void netInit(void)
 
 	arpInit();
 
+	/* 
+		TODO: call icmpInit();
+	 */
+
 	ready(create((void *)netDaemon, INITSTK, INITPRIO*2, "NetD", 2, 
 				 ETH0, &nif0),
 		  RESCHED_NO);

@@ -8,6 +8,7 @@
 #include <xinu.h>
 #include "arp/arp.h"
 #include "dhcp/dhcp.h"
+#include "icmp/icmp.h"
 
 #define MAXBUFS 32
 
@@ -69,6 +70,10 @@ void netDaemon(int dev, struct netif *nif)
 			if (IPv4_PROTO_UDP == dgram->proto)
 			{
 				send(dhcpd, (ulong)packet);
+			}
+			if (IPv4_PROTO_ICMP == dgram->proto)
+			{
+				icmpRecv(dev, packet);
 			}
 			break;
 

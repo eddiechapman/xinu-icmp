@@ -18,6 +18,7 @@ command xsh_kill(int, char *[]);
 command xsh_memstat(int, char *[]);
 command xsh_netstat(int, char *[]);
 command xsh_ps(int, char *[]);
+command xsh_ping(int, char *[]);
 command xsh_test(int, char *[]);
 
 /* This structure describes commands available to the shell. */
@@ -30,7 +31,8 @@ struct centry commandtab[] = {
     {"help", FALSE, xsh_help},
     {"kill", TRUE, xsh_kill},
     {"memstat", FALSE, xsh_memstat},
-	{"netstat", FALSE, xsh_netstat},
+	  {"netstat", FALSE, xsh_netstat},
+    {"ping", FALSE, xsh_ping},
     {"ps", FALSE, xsh_ps},
     {"test", FALSE, xsh_test},
     {"?", FALSE, xsh_help}
