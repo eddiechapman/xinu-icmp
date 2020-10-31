@@ -1,19 +1,7 @@
-/* 
-  icmp.h
+/**
+ * @file icmp.h
  */
-#ifndef _ICMP_H_
-#define _ICMP_H_
-
-/* Tracing macro for ICMP */
-#ifdef TRACE_ICMP
-#include <stdio.h>
-#define ICMP_TRACE(...)     { \
-		fprintf(TRACE_ICMP, "%s:%d (%d) ", __FILE__, __LINE__, gettid()); \
-		fprintf(TRACE_ICMP, __VA_ARGS__); \
-		fprintf(TRACE_ICMP, "\n"); }
-#else
-#define ICMP_TRACE(...)
-#endif
+/* Embedded Xinu, Copyright (C) 2008.  All rights reserved. */
 
 #define ICMP_HEADER_LEN		  4
 
@@ -47,44 +35,38 @@
  * | ...                                                           |
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
-struct icmpgram               /**< ICMP Packet          */
+struct icmpgram                 /**< ICMP Packet          */
 {
-  uchar type;                 /**< ICMP type            */
-  uchar code;                 /**< ICMP code            */
-  ushort chksum;              /**< ICMP checksum        */
-  uchar data[1];              /**< ICMP data            */
+  uchar   type;                 /**< ICMP type            */
+  uchar   code;                 /**< ICMP code            */
+  ushort  chksum;               /**< ICMP checksum        */
+  uchar   data[1];              /**< ICMP data            */
 };
 
-// struct icmpEcho
-// {
-//   ushort id;
-//   ushort seq;
-//   ulong timesec;                /**< Clock time in seconds, */
-//   ulong timetic;                /**< Clock time in tics,    */
-//   ulong timecyc;                /**< Clock time in cycles   */
-//   ulong arrivsec;
-//   ulong arrivtic;
-//   ulong arrivcyc;
-// };
+/*
+ * ICMP ECHO REQUEST / REPLY
+ *
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * | Link-Level Header                                             |
+ * | ...                                                           |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * | IP Header                                                     |
+ * | ...                                                           |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * | ICMP Header                                                   |
+* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * | Identifier                    | Sequence number               |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * | Data (Variable octets)                                        |
+ * | ...                                                           |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ */
+struct icmpEcho                 /**< ICMP Echo Packet     */
+{
+  ushort  id;                   /**< Echo identifier      */
+  ushort  seq;                  /**< Echo sequence        */
+  uchar   data[1];              /**< Echo optional data   */
+};
 
-// #define NPINGQUEUE 5
-// #define NPINGHOLD  10
-
-// struct icmpEchoQueue
-// {
-//   int pid;              /**< ID of process that send the ICMP Echo Request. */
-//   int head;             /**< Position to store next ICMP Echo Reply.        */
-//   int tail;             /**< Position of next ICMP Echo Reply to get.       */
-//   struct packet *pkts[NPINGHOLD];   /*< Stored ICMP Echo Replies.           */
-// };
-
-// extern struct icmpEchoQueue echotab[NPINGQUEUE];
-
-// int icmpDaemon(void);
-// void icmpInit(void);
 int icmpRecv(int dev, uchar *packet);
-int icmpEchoRequest(int dev, uchar *dest);
-int icmpEchoReply(int dev, uchar *packet);
-// void icmpSend(uchar *packet, uchar type, uchar code,
- //                uint datalen, struct netaddr *src, struct netaddr *dst);
-#endif                          /* _NET_H_ */
+int icmpEchoRequest(int dev, ushort seq, ushort id, uchar *ipaddr);

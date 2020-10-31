@@ -89,15 +89,7 @@ command xsh_arp(int nargs, char *args[])
 	uchar macaddr[ETH_ADDR_LEN];
 	int i;
 
-	/* Output help, if '--help' argument was supplied */
-    if (nargs == 2 && strncmp(args[1], "--help", 6) == 0)
-    {
-        fprintf(stdout, "Displays and manipulates ARP table.\n");
-        fprintf(stdout, "\t--help\t display this help and exit\n");
-        fprintf(stdout, "\t<IP>\t resolve requested IP address\n");
-        fprintf(stdout, "\tWithout arguments, displays current ARP table\n");
-        return 0;
-    }
+
 
 	if (nargs < 2)
 	{
