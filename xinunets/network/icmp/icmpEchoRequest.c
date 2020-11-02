@@ -56,18 +56,16 @@ int icmpEchoRequest(int dev, ushort seq, ushort id, uchar *ipaddr)
 	ip->chksum = 0;
   getip(dev, ip->src);
 
-  printf("Source ip is :%s\n",ip->src);
-  printf("Value of variable ipaddr :%s\n",ipaddr);
-  printf("Value of data field in ethergram is :%s\n",ether->data);
+  printf("\tSource ip is :%s\n", ip->src);
+  printf("\tValue of variable ipaddr :%s\n", ipaddr);
+  printf("\tValue of data field in ethergram is :%s\n", ether->data);
 
   memcpy(ip->dst, ipaddr, IP_ADDR_LEN);
 
-  printf("Destination ip is :%s\n",ip->dst);
+  printf("\tDestination ip is :%s\n",ip->dst);
 
-  /* Fill in ICMP header */
-  printf("\tFilling in the ICMP header.\n");
   icmp->code = htons(0);
-  icmp->type = ICMP_ECHO;
+  icmp->type = htons(ICMP_ECHO);
   icmp->chksum = htons(0);
 
   printf("\tFilling in the Echo header.\n");
@@ -78,14 +76,12 @@ int icmpEchoRequest(int dev, ushort seq, ushort id, uchar *ipaddr)
 
   write(dev, (uchar *)packet, 
       sizeof(struct ethergram) + sizeof(struct ipgram) + sizeof(struct icmpgram));
-  
-  printf("\tOK, it sent.\n");
 
-  printf("packet value is :%s\n", packet);
-  printf("ethergram value is :%s\n", ether);
-  printf("icmpgram value is :%s\n", icmp);
-  printf("ip structure value is : %s\n", ip);
-  printf("icmpEcho structure value is :%s\n", echo);
-  
+  printf("\tpacket value is :%s\n", packet);
+  printf("\tethergram value is :%s\n", ether);
+  printf("\ticmpgram value is :%s\n", icmp);
+  printf("\tip structure value is : %s\n", ip);
+  printf("\ticmpEcho structure value is :%s\n", echo);
+
   return icmpEchoReply(dev, (uchar *)packet);
 }
