@@ -53,6 +53,8 @@ void netDaemon(int dev, struct netif *nif)
 			return;	
 		}
 
+    printf("NetDaemon: Recieved a packet!\n");
+
 		egram = (struct ethergram *)packet;
 
 		if ((0 != memcmp(egram->dst, nif->mac, ETH_ADDR_LEN))
@@ -62,6 +64,7 @@ void netDaemon(int dev, struct netif *nif)
 		switch (ntohs(egram->type))
 		{
 		case ETYPE_ARP:
+      printf("NetDaemon: It's an ARP packet!\n");
 			arpReceive(dev, packet);
 			break;
 
@@ -69,10 +72,12 @@ void netDaemon(int dev, struct netif *nif)
 			dgram = (struct ipgram    *)egram->data;
 			if (IPv4_PROTO_UDP == dgram->proto)
 			{
+        printf("NetDaemon: It's a UDP packet!\n");
 				send(dhcpd, (ulong)packet);
 			}
 			if (IPv4_PROTO_ICMP == dgram->proto)
 			{
+        printf("NetDaemon: It's an ICMP packet!\n");
 				icmpRecv(dev, packet);
 			}
 			break;
