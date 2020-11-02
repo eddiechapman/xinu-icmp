@@ -55,7 +55,14 @@ int icmpEchoRequest(int dev, ushort seq, ushort id, uchar *ipaddr)
 	ip->proto = IPv4_PROTO_ICMP;
 	ip->chksum = 0;
   getip(dev, ip->src);
+
+  printf("Source ip is :%s\n",ip->src);
+  printf("Value of variable ipaddr :%s\n",ipaddr);
+  printf("Value of data field in ethergram is :%s\n",ether->data);
+
   memcpy(ip->dst, ipaddr, IP_ADDR_LEN);
+
+  printf("Destination ip is :%s\n",ip->dst);
 
   /* Fill in ICMP header */
   printf("\tFilling in the ICMP header.\n");
@@ -74,5 +81,11 @@ int icmpEchoRequest(int dev, ushort seq, ushort id, uchar *ipaddr)
   
   printf("\tOK, it sent.\n");
 
-  return OK;
+  printf("packet value is :%s\n", packet);
+  printf("ethergram value is :%s\n", ether);
+  printf("icmpgram value is :%s\n", icmp);
+  printf("ip structure value is : %s\n", ip);
+  printf("icmpEcho structure value is :%s\n", echo);
+  
+  return icmpEchoReply(dev, (uchar *)packet);
 }

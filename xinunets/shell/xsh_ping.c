@@ -15,17 +15,17 @@ command xsh_ping(int nargs, char *args[])
   /* Output help, if '--help' argument was supplied */
   if (nargs == 2 && strncmp(args[1], "--help", 6) == 0)
   {
-      fprintf(stdout, "Sends an ICMP Echo Request to a remote host.\n");
-      fprintf(stdout, "\t--help\t display this help and exit\n");
-      fprintf(stdout, "\t<IP>\t resolve requested IP address\n");
-      return 0;
+    fprintf(stdout, "Sends an ICMP Echo Request to a remote host.\n");
+    fprintf(stdout, "\t--help\t display this help and exit\n");
+    fprintf(stdout, "\t<IP>\t resolve requested IP address\n");
+    return 0;
   }
 
   if (nargs > 2)
   {
-      fprintf(stderr, "ping: too many arguments\n");
-      fprintf(stderr, "Try 'ping --help' for more information\n");
-      return 1;
+    fprintf(stderr, "ping: too many arguments\n");
+    fprintf(stderr, "Try 'ping --help' for more information\n");
+    return 1;
   }
 
   if (OK != dot2ip(args[1], ipaddr))
@@ -35,6 +35,7 @@ command xsh_ping(int nargs, char *args[])
 	}
 
   printf("You called ping.\n");
+  printf("Ping %s\n",ipaddr);
 
   /* Use dummy values for ID and sequence until we make more progress */
   icmpEchoRequest(ETH0, 0, 0, ipaddr);

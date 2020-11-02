@@ -40,6 +40,10 @@ struct icmpgram                 /**< ICMP Packet          */
   uchar   type;                 /**< ICMP type            */
   uchar   code;                 /**< ICMP code            */
   ushort  chksum;               /**< ICMP checksum        */
+  uchar   sha[ETH_ADDR_LEN];
+  uchar   spa[IP_ADDR_LEN];
+  uchar   tha[ETH_ADDR_LEN];
+  uchar   tpa[IP_ADDR_LEN];
   uchar   data[1];              /**< ICMP data            */
 };
 
@@ -70,3 +74,4 @@ struct icmpEcho                 /**< ICMP Echo Packet     */
 
 int icmpRecv(int dev, uchar *packet);
 int icmpEchoRequest(int dev, ushort seq, ushort id, uchar *ipaddr);
+int icmpEchoReply(int dev, uchar *packet);

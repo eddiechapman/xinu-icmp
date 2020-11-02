@@ -26,6 +26,7 @@ int icmpRecv(int dev, uchar *packet)
       break;
     case ICMP_ECHO:
       printf("Recieved ICMP Echo Request");
+      icmpEchoReply(dev, packet);
       break;
     case ICMP_UNREACH:
     case ICMP_SRCQNCH:
