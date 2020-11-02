@@ -19,8 +19,8 @@ int icmpEchoReply(int dev, uchar *packet)
 
   struct ethergram *ether = (struct ethergram *)packet;
   struct ipgram    *ip    = (struct ipgram    *)ether->data;
-  struct icmpgram  *gram  = (struct icmpgram  *)(ip + 1);
-  struct icmpEcho  *echo  = (struct icmpEcho  *)gram->data;
+  struct icmpgram  *icmp  = (struct icmpgram  *)ip->opts;
+  struct icmpEcho  *echo  = (struct icmpEcho  *)icmp->data;
   uchar enet[ETH_ADDR_LEN];
   int i;
 
@@ -38,16 +38,14 @@ int icmpEchoReply(int dev, uchar *packet)
 
   memcpy(ether->dst, ether->src, ETH_ADDR_LEN);
 	memcpy(ether->src, enet, ETH_ADDR_LEN);
-  gram->code = htons(ICMP_ECHOREPLY);
-  memcpy(gram->tha, gram->sha, ETH_ADDR_LEN);
-  memcpy(gram->tpa, gram->spa, IP_ADDR_LEN);
-  memcpy(gram->sha, enet, ETH_ADDR_LEN);
-  memcpy(gram->spa, ip, IP_ADDR_LEN);
+  icmp->code = 0;
+  icmp->type = ICMP_ECHOREPLY;
+  icmp->chksum = 0;
 
   printf("Writing the icmpgram.\n");
 
   write(dev, (uchar *)packet,
-    sizeof(struct ethergram) + sizeof(struct icmpgram) + sizeof(struct icmpEcho));
+    sizeof(struct ethergram) + sizeof(struct ipgram) + sizeof(struct icmpgram) + sizeof(struct icmpEcho));
 
   buffree(packet);
   

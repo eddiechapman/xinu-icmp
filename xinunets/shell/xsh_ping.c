@@ -11,6 +11,7 @@
 command xsh_ping(int nargs, char *args[])
 {
   uchar ipaddr[IP_ADDR_LEN];
+  int i;
 
   /* Output help, if '--help' argument was supplied */
   if (nargs == 2 && strncmp(args[1], "--help", 6) == 0)
@@ -35,10 +36,11 @@ command xsh_ping(int nargs, char *args[])
 	}
 
   printf("You called ping.\n");
-  printf("Ping %s\n",ipaddr);
 
-  /* Use dummy values for ID and sequence until we make more progress */
-  icmpEchoRequest(ETH0, 0, 0, ipaddr);
-
+  for(i = 0; i < 10; i++)
+  {
+    icmpEchoRequest(ETH0, currpid, i, ipaddr);
+  }
+  
   return 0;
 }

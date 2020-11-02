@@ -16,16 +16,19 @@
 int icmpRecv(int dev, uchar *packet) 
 {
   struct ethergram *egram = (struct ethergram *)packet;
-  struct icmpgram  *icmp  = (struct icmpgram  *)egram->data;
+  struct ipgram    *ip    = (struct ipgram    *)egram->data;
+  struct icmpgram  *icmp  = (struct icmpgram  *)ip->opts;
+  struct icmpEcho  *echo  = (struct icmpEcho  *)icmp->data;
   int id;
 
   switch (icmp->type)
   {
     case ICMP_ECHOREPLY:
-      printf("Recieved ICMP Echo Reply");
+      printf("Recieved ICMP Echo Reply ID: %d, seq: %d\n", 
+          ntohs(echo->id), ntohs(echo->seq));
       break;
     case ICMP_ECHO:
-      printf("Recieved ICMP Echo Request");
+      printf("Recieved ICMP Echo Request\n");
       icmpEchoReply(dev, packet);
       break;
     case ICMP_UNREACH:
@@ -38,10 +41,10 @@ int icmpRecv(int dev, uchar *packet)
     case ICMP_INFORQST:
     case ICMP_INFOREPLY:
     case ICMP_TRACEROUTE:
-      printf("ICMP message type %d not handled", icmp->type);
+      printf("ICMP message type %d not handled\n", icmp->type);
       break;
     default:
-      printf("ICMP message type %d unknown", icmp->type);
+      printf("ICMP message type %d unknown\n", icmp->type);
       break;
   }
 
