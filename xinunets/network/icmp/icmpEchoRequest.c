@@ -40,23 +40,17 @@ int icmpEchoRequest(int dev, ushort seq, ushort id, uchar *ipaddr)
 	ip->flags_froff = 0;
 	ip->ttl = 63;
 	ip->proto = IPv4_PROTO_ICMP;
-	ip->chksum = 0;
+	ip->chksum = 0;  // TODO: calculate checksum
   getip(dev, ip->src);
 
   memcpy(ip->dst, ipaddr, IP_ADDR_LEN);
 
   icmp->code = 0;
   icmp->type = ICMP_ECHO;
-  icmp->chksum = 0;
+  icmp->chksum = 0; // TODO: calculate checksum
 
   echo->id = htons(id);
   echo->seq = htons(seq);
-
-	printf("ICMP:\ttype = 0x%04X ", icmp->type);
-  printf("ICMP:\tcode = 0x%04X ", icmp->code);
-	printf("ICMP:\tchecksum = 0x%04X\n", ntohs(icmp->chksum));
-  printf("ICMP:\tidentifier = %d ", ntohs(echo->id));
-	printf("ICMP:\tsequence = %d\n", ntohs(echo->seq));
 
   write(dev, (uchar *)packet, 
       sizeof(struct ethergram) + sizeof(struct ipgram) + sizeof(struct icmpgram) + sizeof(struct icmpEcho));

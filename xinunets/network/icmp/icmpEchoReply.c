@@ -15,8 +15,6 @@
  */
 int icmpEchoReply(int dev, uchar *packet)
 {
-  printf("\tReached inside icmpEchoReply.\n");
-
   struct ethergram *ether = (struct ethergram *)packet;
   struct ipgram    *ip    = (struct ipgram    *)ether->data;
   struct icmpgram  *icmp  = (struct icmpgram  *)ip->opts;
@@ -40,9 +38,7 @@ int icmpEchoReply(int dev, uchar *packet)
 	memcpy(ether->src, enet, ETH_ADDR_LEN);
   icmp->code = 0;
   icmp->type = ICMP_ECHOREPLY;
-  icmp->chksum = 0;
-
-  printf("Writing the icmpgram.\n");
+  icmp->chksum = 0; // TODO: calculate checksum
 
   write(dev, (uchar *)packet,
     sizeof(struct ethergram) + sizeof(struct ipgram) + sizeof(struct icmpgram) + sizeof(struct icmpEcho));

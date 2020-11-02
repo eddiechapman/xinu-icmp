@@ -73,7 +73,6 @@ void netDaemon(int dev, struct netif *nif)
 			}
 			if (IPv4_PROTO_ICMP == dgram->proto)
 			{
-        printf("NetDaemon: It's an ICMP packet!\n");
 				icmpRecv(dev, packet);
 			}
 			break;

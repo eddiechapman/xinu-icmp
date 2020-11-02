@@ -35,12 +35,21 @@ command xsh_ping(int nargs, char *args[])
 		return 1;
 	}
 
-  printf("You called ping.\n");
+  printf("\n");
 
   for(i = 0; i < 10; i++)
   {
-    icmpEchoRequest(ETH0, currpid, i, ipaddr);
+    icmpEchoRequest(ETH0, i, currpid, ipaddr);
   }
-  
+
+  /* 
+    TODO: print out statistics about the echo replies that come back
+    
+    example:
+      --- ping statistics ---
+      10 packets transmitted, 10 packets recieved, 0.0% packet loss
+      
+   */
+
   return 0;
 }

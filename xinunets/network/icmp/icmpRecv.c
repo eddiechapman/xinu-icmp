@@ -24,11 +24,18 @@ int icmpRecv(int dev, uchar *packet)
   switch (icmp->type)
   {
     case ICMP_ECHOREPLY:
-      printf("Recieved ICMP Echo Reply ID: %d, seq: %d\n", 
-          ntohs(echo->id), ntohs(echo->seq));
+      /* TODO: Keep track of echo reply statistics per ping process.
+          Maybe send them back to xsh_ping via send()? */
+      printf("%d bytes from %d.%d.%d.%d: icmp_seq=%d ttl=%d\n", 
+          sizeof(packet), 
+          ip->src[0], 
+          ip->src[1],
+          ip->src[2],
+          ip->src[3],
+          ntohs(echo->seq), 
+          ip->ttl);
       break;
     case ICMP_ECHO:
-      printf("Recieved ICMP Echo Request\n");
       icmpEchoReply(dev, packet);
       break;
     case ICMP_UNREACH:
