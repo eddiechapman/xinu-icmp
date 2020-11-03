@@ -19,6 +19,8 @@ int icmpRecv(int dev, uchar *packet)
   struct ipgram    *ip    = (struct ipgram    *)egram->data;
   struct icmpgram  *icmp  = (struct icmpgram  *)ip->opts;
   struct icmpEcho  *echo  = (struct icmpEcho  *)icmp->data;
+
+  
   int id;
 
   switch (icmp->type)
@@ -26,14 +28,8 @@ int icmpRecv(int dev, uchar *packet)
     case ICMP_ECHOREPLY:
       /* TODO: Keep track of echo reply statistics per ping process.
           Maybe send them back to xsh_ping via send()? */
-      printf("%d bytes from %d.%d.%d.%d: icmp_seq=%d ttl=%d\n", 
-          sizeof(packet), 
-          ip->src[0], 
-          ip->src[1],
-          ip->src[2],
-          ip->src[3],
-          ntohs(echo->seq), 
-          ip->ttl);
+      send(ntohs(echo->id), (ulong)packet);
+      
       break;
     case ICMP_ECHO:
       icmpEchoReply(dev, packet);
