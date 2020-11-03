@@ -40,14 +40,14 @@ int icmpEchoRequest(int dev, ushort seq, ushort id, uchar *ipaddr)
 	ip->flags_froff = 0;
 	ip->ttl = 63;
 	ip->proto = IPv4_PROTO_ICMP;
-	ip->chksum = 0;  // TODO: calculate checksum
+	ip->chksum = 0;  // TODO: calculate checksum (see dhcp/sendDiscover.c line 74)
   getip(dev, ip->src);
 
   memcpy(ip->dst, ipaddr, IP_ADDR_LEN);
 
   icmp->code = 0;
   icmp->type = ICMP_ECHO;
-  icmp->chksum = 0; // TODO: calculate checksum
+  icmp->chksum = 0; // TODO: calculate checksum (see dhcp/sendDiscover.c line 74)
 
   echo->id = htons(id);
   echo->seq = htons(seq);

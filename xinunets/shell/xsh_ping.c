@@ -81,6 +81,8 @@ command xsh_ping(int nargs, char *args[])
 
     if (ntohs(echo->id) == currpid)
     {
+      // TODO: Verify packet ICMP checksum value 
+
       printf("%d bytes from %d.%d.%d.%d: icmp_seq=%d ttl=%d\n", 
           sizeof(packet), ip->src[0], ip->src[1],  ip->src[2], 
           ip->src[3],  ntohs(echo->seq), ip->ttl);
