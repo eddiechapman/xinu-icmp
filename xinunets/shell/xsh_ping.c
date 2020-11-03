@@ -1,6 +1,28 @@
 #include <xinu.h>
 #include "../network/icmp/icmp.h"
 
+/**
+ * Send a series of ICMP echo requests at one second intervals.
+ * 
+ * @param dev     Device descriptor used for sending the packets.
+ * @param n       Number of echo requests to send
+ * @param ipaddr  Destination network address for echo requests
+ * @param id      Process ID of ping command. Used in echo identifier.
+ * @returns       non-zero value on error
+ */
+process sendEchoRequests(int dev, int n, uchar *ipaddr, ushort id)
+{
+  int i;
+
+  for(i = 0; i < n; i++)
+  {
+    icmpEchoRequest(ETH0, i, id, ipaddr);
+    sleep(1000);
+  }
+
+  return OK;
+}
+
 /** 
  * Shell command (ping) tests connection to remote host via ICMP messages.
  * 
@@ -11,6 +33,14 @@
 command xsh_ping(int nargs, char *args[])
 {
   uchar ipaddr[IP_ADDR_LEN];
+  uchar *packet = NULL;
+  struct ethergram *egram;
+  struct ipgram    *ip;
+  struct icmpgram  *icmp;
+  struct icmpEcho  *echo;
+  int mesg = 0;
+  int received = 0;
+  int n = 10;
   int i;
 
   /* Output help, if '--help' argument was supplied */
@@ -37,19 +67,38 @@ command xsh_ping(int nargs, char *args[])
 
   printf("\n");
 
-  for(i = 0; i < 10; i++)
+  ready(create((void *)sendEchoRequests, INITSTK, INITPRIO*2, 
+          "send echo requests", 4, ETH0, n, ipaddr, currpid), RESCHED_NO);
+
+  while (received < n)
   {
-    icmpEchoRequest(ETH0, i, currpid, ipaddr);
+    mesg = receive();
+    packet = (uchar *)mesg;
+    egram = (struct ethergram *)packet;
+    ip = (struct ipgram *)egram->data;
+    icmp = (struct icmpgram *)ip->opts;
+    echo = (struct icmpEcho *)icmp->data;
+
+    if (ntohs(echo->id) == currpid)
+    {
+      printf("%d bytes from %d.%d.%d.%d: icmp_seq=%d ttl=%d\n", 
+          sizeof(packet), ip->src[0], ip->src[1],  ip->src[2], 
+          ip->src[3],  ntohs(echo->seq), ip->ttl);
+      received++;
+    }
+    
   }
 
-  /* 
-    TODO: print out statistics about the echo replies that come back
-    
-    example:
-      --- ping statistics ---
-      10 packets transmitted, 10 packets recieved, 0.0% packet loss
-      
-   */
+  printf("\n--- ping statistics ---\n");
+  printf("%d packets transmitted, %d packets recieved", n, received);
+  if (n - received == 0)
+  {
+    printf("0%% packet loss.\n");
+  }
+  else
+  {
+    printf("d%% packet loss.\n", ((n - received) / n) * 100);
+  }
 
   return 0;
 }
