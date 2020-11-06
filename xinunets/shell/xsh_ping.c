@@ -19,6 +19,7 @@ process sendEchoRequests(int dev, int n, uchar *ipaddr, ushort id)
   for(i = 0; i < n; i++)
   {
     icmpEchoRequest(dev, i, id, ipaddr);
+    sleep(500);
   }
 
   /* printf("sendEchoRequest: exiting function\n"); */
@@ -41,6 +42,7 @@ command xsh_ping(int nargs, char *args[])
   struct ipgram    *ip;
   struct icmpgram  *icmp;
   struct icmpEcho  *echo;
+  ushort temp = 0;
   int mesg = 0;
   int received = 0;
   int n = 10;
@@ -89,26 +91,32 @@ command xsh_ping(int nargs, char *args[])
     icmp = (struct icmpgram *)ip->opts;
     echo = (struct icmpEcho *)icmp->data;
 
-    if (ntohs(echo->id) == currpid)
+    if(ntohs(echo->id) != currpid)
     {
-      // TODO: Verify packet ICMP checksum value 
+      printf("Echo reply has incorrect ID: %d (correct: %d)\n", ntohs(echo->id), currpid);
+      continue;
+    }
 
-      printf("%d bytes from %d.%d.%d.%d: icmp_seq=%d ttl=%d\n", 
-          sizeof(packet), ip->src[0], ip->src[1],  ip->src[2], 
+    temp = icmp->chksum;
+    icmp->chksum = 0;
+    icmp->chksum = checksum((uchar *)icmp, ICMP_HEADER_LEN);
+    if (icmp->chksum != temp)
+    {
+      printf("Incorrect checksum: 0x%04X. (correct: 0x%04X))\n", ntohs(temp), ntohs(icmp->chksum));
+      continue;
+    }
+
+    printf("%d bytes from %d.%d.%d.%d: icmp_seq=%d ttl=%d\n", 
+            sizeof(packet), ip->src[0], ip->src[1],  ip->src[2], 
           ip->src[3],  ntohs(echo->seq), ip->ttl);
       
-      received++;
+    received++;
       
-      if (ntohs(echo->seq) == n - 1)  // this is final packet, but some were lost
-      {
-        break;
-      }
-    }
-    else
+    if (ntohs(echo->seq) == n - 1)  // this is final packet, but some were lost
     {
-      printf("xsh ping: ICMP ID %d != pid %d\n", ntohs(echo->id), currpid);
+      break;
     }
-
+    
     /* printf("xsh_ping: bottom of receive loop. Message count: %d\n", received); */
   }
 
