@@ -14,11 +14,16 @@ process sendEchoRequests(int dev, int n, uchar *ipaddr, ushort id)
 {
   int i;
 
+  /* printf("sendEchoRequest: entering function\n"); */
+
   for(i = 0; i < n; i++)
   {
-    icmpEchoRequest(ETH0, i, id, ipaddr);
+    icmpEchoRequest(dev, i, id, ipaddr);
+    /* printf("sendEchoRequest: sleeping\n"); */
     sleep(1000);
   }
+
+  /* printf("sendEchoRequest: exiting function\n"); */
 
   return OK;
 }
@@ -42,6 +47,8 @@ command xsh_ping(int nargs, char *args[])
   int received = 0;
   int n = 10;
   int i;
+
+  /* printf("xsh_ping: entering function\n"); */
 
   /* Output help, if '--help' argument was supplied */
   if (nargs == 2 && strncmp(args[1], "--help", 6) == 0)
@@ -67,12 +74,17 @@ command xsh_ping(int nargs, char *args[])
 
   printf("\n");
 
-  ready(create((void *)sendEchoRequests, INITSTK, INITPRIO*2, 
+  ready(create((void *)sendEchoRequests, INITSTK, proctab[currpid].priority + 1, 
           "send echo requests", 4, ETH0, n, ipaddr, currpid), RESCHED_NO);
 
   while (received < n)
   {
+    /* printf("xsh_ping: top of receive loop. Message count: %d\n", received); */
+    
     mesg = receive();
+
+    /* printf("xsh_ping: message received: %d\n", mesg); */
+
     packet = (uchar *)mesg;
     egram = (struct ethergram *)packet;
     ip = (struct ipgram *)egram->data;
@@ -82,13 +94,17 @@ command xsh_ping(int nargs, char *args[])
     if (ntohs(echo->id) == currpid)
     {
       // TODO: Verify packet ICMP checksum value 
-
+      /* printf("xsh ping: ICMP ID %d == pid %d\n", ntohs(echo->id), currpid); */
       printf("%d bytes from %d.%d.%d.%d: icmp_seq=%d ttl=%d\n", 
           sizeof(packet), ip->src[0], ip->src[1],  ip->src[2], 
           ip->src[3],  ntohs(echo->seq), ip->ttl);
       received++;
     }
-    
+    else
+    {
+      printf("xsh ping: ICMP ID %d != pid %d\n", ntohs(echo->id), currpid);
+    }
+    /* printf("xsh_ping: bottom of receive loop. Message count: %d\n", received); */
   }
 
   printf("\n--- ping statistics ---\n");

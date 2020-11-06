@@ -21,12 +21,16 @@ int icmpRecv(int dev, uchar *packet)
   struct icmpEcho  *echo  = (struct icmpEcho  *)icmp->data;
   int id;
 
+/*   printf("icmpRecv: entering function\n"); */
+
   switch (icmp->type)
   {
     case ICMP_ECHOREPLY:
+      printf("icmpRecv: received echo reply\n");
       send(ntohs(echo->id), (ulong)packet);
       break;
     case ICMP_ECHO:
+      printf("icmpRecv: received echo request\n");
       icmpEchoReply(dev, packet);
       break;
     case ICMP_UNREACH:
@@ -47,5 +51,6 @@ int icmpRecv(int dev, uchar *packet)
   }
 
   buffree(packet);
+/*   printf("icmpRecv: exiting function\n"); */
   return OK;
 }

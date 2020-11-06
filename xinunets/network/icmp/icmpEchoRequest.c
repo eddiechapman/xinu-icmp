@@ -25,6 +25,8 @@ int icmpEchoRequest(int dev, ushort seq, ushort id, uchar *ipaddr)
   struct icmpEcho  *echo  = (struct icmpEcho  *)icmp->data;
   int i;
 
+/*   printf("icmpEchoRequest: entering function\n"); */
+
   /* Fill in ethernet header */
   getmac(dev, ether->src);
 
@@ -56,6 +58,8 @@ int icmpEchoRequest(int dev, ushort seq, ushort id, uchar *ipaddr)
       sizeof(struct ethergram) + sizeof(struct ipgram) + sizeof(struct icmpgram) + sizeof(struct icmpEcho));
   
   buffree(packet);
+
+/*   printf("icmpEchoRequest: exiting function\n"); */
 
   return OK;
 }

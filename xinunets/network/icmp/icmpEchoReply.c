@@ -22,6 +22,8 @@ int icmpEchoReply(int dev, uchar *packet)
   uchar enet[ETH_ADDR_LEN];
   int i;
 
+/*   printf("icmpEchoReply: entering function\n"); */
+
   if (SYSERR == getmac(dev, enet))
   {
     buffree(packet);
@@ -44,6 +46,8 @@ int icmpEchoReply(int dev, uchar *packet)
     sizeof(struct ethergram) + sizeof(struct ipgram) + sizeof(struct icmpgram) + sizeof(struct icmpEcho));
 
   buffree(packet);
+
+/*   printf("icmpEchoReply: exiting function\n"); */
   
   return OK;
 }
