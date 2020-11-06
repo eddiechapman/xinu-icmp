@@ -22,18 +22,22 @@ int icmpRecv(int dev, uchar *packet)
   ushort temp = 0;
   int id;
 
-/*   printf("icmpRecv: entering function\n"); */
+  /* printf("icmpRecv: entering function\n"); */
 
-  temp = icmp->chksum;
-  icmp->chksum = 0;
-  icmp->chksum = checksum((uchar *)icmp, ICMP_HEADER_LEN);
-  if (icmp->chksum != temp)
-  {
-    printf("Incorrect ICMP checksum: 0x%04X. (correct: 0x%04X))\n", 
-            ntohs(temp), ntohs(icmp->chksum));
-    buffree(packet);
-    return OK;  // Should this be an error code?
-  }
+  /* TODO: Uncomment the lines below. Do this after you've uncommented
+    the checksum() calls in icmpEchoReply and icmpEchoRequest and can 
+    use ping successfully between two machines running our code. */
+
+  // temp = icmp->chksum;
+  // icmp->chksum = 0;
+  // icmp->chksum = checksum((uchar *)icmp, ICMP_HEADER_LEN);
+  // if (icmp->chksum != temp)
+  // {
+  //   printf("Incorrect ICMP checksum: 0x%04X. (correct: 0x%04X))\n", 
+  //           ntohs(temp), ntohs(icmp->chksum));
+  //   buffree(packet);
+  //   return OK; 
+  // }
 
   switch (icmp->type)
   {

@@ -45,12 +45,12 @@ int icmpEchoRequest(int dev, ushort seq, ushort id, uchar *ipaddr)
 	ip->chksum = 0;
   getip(dev, ip->src);
   memcpy(ip->dst, ipaddr, IP_ADDR_LEN);
-  ip->chksum = checksum((uchar *)ip, IPv4_HDR_LEN);
+  // TODO: ip->chksum = checksum((uchar *)ip, IPv4_HDR_LEN);
 
   icmp->code = 0;
   icmp->type = ICMP_ECHO;
   icmp->chksum = 0;
-  icmp->chksum = checksum((uchar *)icmp, ICMP_HEADER_LEN);
+  // TODO: icmp->chksum = checksum((uchar *)icmp, ICMP_HEADER_LEN);
 
   echo->id = htons(id);
   echo->seq = htons(seq);

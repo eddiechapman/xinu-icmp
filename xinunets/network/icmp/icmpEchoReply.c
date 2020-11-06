@@ -41,7 +41,7 @@ int icmpEchoReply(int dev, uchar *packet)
   icmp->code = 0;
   icmp->type = ICMP_ECHOREPLY;
   icmp->chksum = 0;
-  icmp->chksum = checksum((uchar *)icmp, ICMP_HEADER_LEN);
+  // TODO: icmp->chksum = checksum((uchar *)icmp, ICMP_HEADER_LEN);
 
   write(dev, (uchar *)packet,
     sizeof(struct ethergram) + sizeof(struct ipgram) + sizeof(struct icmpgram) + sizeof(struct icmpEcho));
