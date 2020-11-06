@@ -113,7 +113,7 @@ command xsh_ping(int nargs, char *args[])
   }
 
   printf("\n--- ping statistics ---\n");
-  printf("%d packets transmitted, %d packets received", n, received);
+  printf("%d packets transmitted, %d packets received, ", n, received);
   if (n - received == 0)
   {
     printf("0%% packet loss.\n");
