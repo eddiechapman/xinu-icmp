@@ -75,7 +75,7 @@ command xsh_ping(int nargs, char *args[])
   ready(create((void *)sendEchoRequests, INITSTK, proctab[currpid].priority + 1, 
           "send echo requests", 4, ETH0, n, ipaddr, currpid), RESCHED_NO);
 
-  while (received < n)
+  while (1)
   {
     /* printf("xsh_ping: top of receive loop. Message count: %d\n", received); */
     
@@ -92,16 +92,23 @@ command xsh_ping(int nargs, char *args[])
     if (ntohs(echo->id) == currpid)
     {
       // TODO: Verify packet ICMP checksum value 
-      /* printf("xsh ping: ICMP ID %d == pid %d\n", ntohs(echo->id), currpid); */
+
       printf("%d bytes from %d.%d.%d.%d: icmp_seq=%d ttl=%d\n", 
           sizeof(packet), ip->src[0], ip->src[1],  ip->src[2], 
           ip->src[3],  ntohs(echo->seq), ip->ttl);
+      
       received++;
+      
+      if (ntohs(echo->seq) == n - 1)  // this is final packet, but some were lost
+      {
+        break;
+      }
     }
     else
     {
       printf("xsh ping: ICMP ID %d != pid %d\n", ntohs(echo->id), currpid);
     }
+
     /* printf("xsh_ping: bottom of receive loop. Message count: %d\n", received); */
   }
 
