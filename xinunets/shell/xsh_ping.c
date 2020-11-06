@@ -19,8 +19,6 @@ process sendEchoRequests(int dev, int n, uchar *ipaddr, ushort id)
   for(i = 0; i < n; i++)
   {
     icmpEchoRequest(dev, i, id, ipaddr);
-    /* printf("sendEchoRequest: sleeping\n"); */
-    sleep(1000);
   }
 
   /* printf("sendEchoRequest: exiting function\n"); */
