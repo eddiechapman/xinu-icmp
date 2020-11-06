@@ -42,7 +42,6 @@ command xsh_ping(int nargs, char *args[])
   struct ipgram    *ip;
   struct icmpgram  *icmp;
   struct icmpEcho  *echo;
-  ushort temp = 0;
   int mesg = 0;
   int received = 0;
   int n = 10;
@@ -94,15 +93,6 @@ command xsh_ping(int nargs, char *args[])
     if(ntohs(echo->id) != currpid)
     {
       printf("Echo reply has incorrect ID: %d (correct: %d)\n", ntohs(echo->id), currpid);
-      continue;
-    }
-
-    temp = icmp->chksum;
-    icmp->chksum = 0;
-    icmp->chksum = checksum((uchar *)icmp, ICMP_HEADER_LEN);
-    if (icmp->chksum != temp)
-    {
-      printf("Incorrect checksum: 0x%04X. (correct: 0x%04X))\n", ntohs(temp), ntohs(icmp->chksum));
       continue;
     }
 

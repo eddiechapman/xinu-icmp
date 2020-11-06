@@ -19,9 +19,21 @@ int icmpRecv(int dev, uchar *packet)
   struct ipgram    *ip    = (struct ipgram    *)egram->data;
   struct icmpgram  *icmp  = (struct icmpgram  *)ip->opts;
   struct icmpEcho  *echo  = (struct icmpEcho  *)icmp->data;
+  ushort temp = 0;
   int id;
 
 /*   printf("icmpRecv: entering function\n"); */
+
+  temp = icmp->chksum;
+  icmp->chksum = 0;
+  icmp->chksum = checksum((uchar *)icmp, ICMP_HEADER_LEN);
+  if (icmp->chksum != temp)
+  {
+    printf("Incorrect ICMP checksum: 0x%04X. (correct: 0x%04X))\n", 
+            ntohs(temp), ntohs(icmp->chksum));
+    buffree(packet);
+    return OK;  // Should this be an error code?
+  }
 
   switch (icmp->type)
   {
