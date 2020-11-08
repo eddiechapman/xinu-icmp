@@ -14,15 +14,11 @@ process sendEchoRequests(int dev, int n, uchar *ipaddr, ushort id)
 {
   int i;
 
-  /* printf("sendEchoRequest: entering function\n"); */
-
   for(i = 0; i < n; i++)
   {
     icmpEchoRequest(dev, i, id, ipaddr);
     sleep(500);
   }
-
-  /* printf("sendEchoRequest: exiting function\n"); */
 
   return OK;
 }
@@ -46,8 +42,6 @@ command xsh_ping(int nargs, char *args[])
   int received = 0;
   int n = 10;
   int i;
-
-  /* printf("xsh_ping: entering function\n"); */
 
   /* Output help, if '--help' argument was supplied */
   if (nargs == 2 && strncmp(args[1], "--help", 6) == 0)
@@ -77,12 +71,8 @@ command xsh_ping(int nargs, char *args[])
           "send echo requests", 4, ETH0, n, ipaddr, currpid), RESCHED_NO);
 
   while (1)
-  {
-    /* printf("xsh_ping: top of receive loop. Message count: %d\n", received); */
-    
+  {  
     mesg = receive();
-
-    /* printf("xsh_ping: message received: %d\n", mesg); */
 
     packet = (uchar *)mesg;
     egram = (struct ethergram *)packet;
@@ -106,20 +96,11 @@ command xsh_ping(int nargs, char *args[])
     {
       break;
     }
-    
-    /* printf("xsh_ping: bottom of receive loop. Message count: %d\n", received); */
   }
 
   printf("\n--- ping statistics ---\n");
   printf("%d packets transmitted, %d packets received, ", n, received);
-  if (n - received == 0)
-  {
-    printf("0%% packet loss.\n");
-  }
-  else
-  {
-    printf("d%% packet loss.\n", ((n - received) / n) * 100);
-  }
+  printf(" %u%% packet loss \n", (n - received) * 100 / n);
 
   return 0;
 }

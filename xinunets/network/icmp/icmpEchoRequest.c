@@ -25,8 +25,6 @@ int icmpEchoRequest(int dev, ushort seq, ushort id, uchar *ipaddr)
   struct icmpEcho  *echo  = (struct icmpEcho  *)icmp->data;
   int i;
 
-/*   printf("icmpEchoRequest: entering function\n"); */
-
   /* Fill in ethernet header */
   getmac(dev, ether->src);
 
@@ -45,12 +43,12 @@ int icmpEchoRequest(int dev, ushort seq, ushort id, uchar *ipaddr)
 	ip->chksum = 0;
   getip(dev, ip->src);
   memcpy(ip->dst, ipaddr, IP_ADDR_LEN);
-  // TODO: ip->chksum = checksum((uchar *)ip, IPv4_HDR_LEN);
+  ip->chksum = checksum((uchar *)ip, IPv4_HDR_LEN);
 
   icmp->code = 0;
   icmp->type = ICMP_ECHO;
   icmp->chksum = 0;
-  // TODO: icmp->chksum = checksum((uchar *)icmp, ICMP_HEADER_LEN);
+  icmp->chksum = checksum((uchar *)icmp, ICMP_HEADER_LEN);
 
   echo->id = htons(id);
   echo->seq = htons(seq);
@@ -59,8 +57,6 @@ int icmpEchoRequest(int dev, ushort seq, ushort id, uchar *ipaddr)
       sizeof(struct ethergram) + sizeof(struct ipgram) + sizeof(struct icmpgram) + sizeof(struct icmpEcho));
   
   buffree(packet);
-
-/*   printf("icmpEchoRequest: exiting function\n"); */
 
   return OK;
 }
